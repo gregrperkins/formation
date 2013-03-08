@@ -1,3 +1,5 @@
+[![build status](https://secure.travis-ci.org/gregrperkins/formation.png)](http://travis-ci.org/gregrperkins/formation)
+
 ## Formation
 
 A build system, maybe?
