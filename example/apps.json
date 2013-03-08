@@ -1,0 +1,8 @@
+{
+  "SDK": {
+    "main": "SDK"
+  },
+  "Test": {
+    "main": "TEST"
+  }
+}

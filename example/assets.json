@@ -1,0 +1,35 @@
+{
+  "SDK": {
+    "key": "SDK",
+    "type": "module",
+    "filename": "sdk",
+    "path": "module/an_sdk.js",
+    "deps": ["SHARED"]
+  },
+  "SHARED": {
+    "key": "SHARED",
+    "type": "module",
+    "filename": "shared",
+    "path": "module/my_shared.js"
+  },
+  "TEST": {
+    "key": "TEST",
+    "type": "module",
+    "filename": "test",
+    "path": "module/my_test.js",
+    "deps": ["SHARED", "SAMPLE_CSS", "MOCK_JS"]
+  },
+
+  "SAMPLE_CSS": {
+    "key": "SAMPLE_CSS",
+    "type": "css",
+    "filename": "sample.css",
+    "path": "css/sample.css"
+  },
+  "MOCK_JS": {
+    "key": "MOCK_JS",
+    "type": "js",
+    "filename": "mock.js",
+    "path": "js/mock.js"
+  }
+}
