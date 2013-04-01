@@ -1,6 +1,6 @@
 {
   "name": "formation",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Multi-element build system.",
   "main": "lib/formation.js",
   "scripts": {
