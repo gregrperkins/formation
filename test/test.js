@@ -1,4 +1,4 @@
-require('longjohn');
+// require('longjohn');
 var besync = require('besync');
 var Browser = require('zombie');
 var ecstatic = require('ecstatic');
@@ -17,9 +17,13 @@ describe('formation', function () {
   racetrack.mochaHook();
   var fns = {
     'on': false,
+    'once': false,
     'removeListener': false,
     'addChild': false,
     'removeChild': false,
+
+    'dirty_': true,
+    'update_': true
   };
   var silentTracer_ = {fns: fns};
   var tracer_ = {
@@ -93,6 +97,95 @@ describe('formation', function () {
         assetsObject.init,
         checkInitialized,
       ], assetsObject);
+    });
+  });
+
+  describe('Element', function () {
+    it('updates when a child updates', function (done) {
+      var parent = new formation.Element();
+      var child = new formation.Element();
+      // console.log();
+      // racetrack.configure(parent, tracer_);
+      parent.addChild(child);
+      var calculations = 0;
+      parent.calculate_ = function (cb) {
+        calculations++;
+        cb(null, 'a' + child.cached);
+      };
+      child.calculate_ = function (cb) {
+        cb(null, calculations);
+      };
+      parent.init(function (err) {
+        if (err) return done(err);
+        child.cached.should.equal(0);
+        parent.cached.should.equal('a0');
+        calculations.should.equal(1);
+
+        // Can't just pass as a callback to dirty: EventEmitter isn't async
+        parent.once('update', function () {
+          calculations.should.equal(2);
+          parent.cached.should.equal('a1');
+          done();
+        });
+
+        child.dirty(function (err) {
+          if (err) return done(err);
+        });
+      });
+    });
+
+    it('only updates once when a child updates twice fast', function (done) {
+      var parent = new formation.Element();
+      var child = new formation.Element();
+      // console.log();
+      // racetrack.configure(parent, tracer_);
+      parent.addChild(child);
+
+      var initDone = false;
+      var pendingCb = null;
+      var calculations = 0;
+      parent.calculate_ = function (cb) {
+        calculations++;
+        if (initDone && pendingCb) {
+          done(new Error('calculated twice before cb finished.'));
+        } else if (initDone) {
+          pendingCb = cb;
+          // console.log('Pended cb, first calculation waiting...');
+        } else {
+          // console.log('First calculation done');
+          cb();
+        }
+      };
+
+      parent.init(function (err) {
+        if (err) return done(err);
+        calculations.should.equal(1);
+        initDone = true;
+
+        // Can't just pass as a callback to dirty: EventEmitter isn't async
+        parent.on('update', function () {
+          // console.log('all done, update finished');
+          calculations.should.equal(2);
+          done();
+        });
+
+        child.on('update', function () {
+          // console.log('child updating');
+        });
+
+        // console.log('first child dirtying');
+        child.dirty(function (err) {
+          // console.log('first child dirty happened');
+          if (err) return done(err);
+          // console.log('second child dirtying');
+          child.dirty(function (err) {
+            // console.log('second child dirty happened');
+            if (err) return done(err);
+            if (!pendingCb) return done('Weird error');
+            return pendingCb();
+          });
+        });
+      });
     });
   });
 
