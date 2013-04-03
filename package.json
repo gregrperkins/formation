@@ -1,6 +1,6 @@
 {
   "name": "formation",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "Multi-element build system.",
   "main": "lib/formation.js",
   "scripts": {
@@ -19,11 +19,11 @@
   "devDependencies": {
     "express": "3.1.0",
     "funct": "0.0.2",
-    "longjohn": "0.0.4",
     "mocha": "~1.7",
     "racetrack": "0.0.3",
     "shoulda": "0.0.1",
     "supervisor": "~0.5.0",
+    "temp": "0.5.0",
     "zombie": "2.0.0-alpha11"
   }
 }

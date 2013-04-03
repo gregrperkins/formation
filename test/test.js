@@ -1,4 +1,3 @@
-// require('longjohn');
 var besync = require('besync');
 var Browser = require('zombie');
 var ecstatic = require('ecstatic');
@@ -8,6 +7,7 @@ var funct = require('funct');
 var http = require('http');
 var racetrack = require('racetrack');
 var should = require('shoulda');
+var temp = require('temp');
 var trim = require('cli-color/lib/trim');
 var util = require('util');
 
@@ -409,5 +409,40 @@ describe('formation', function () {
     };
   });
 
+  describe('FileSink', function () {
+    var moduleWrapper = new formation.TextFileCache('./example/module.js');
+    var sink, path;
+    beforeEach(function (done) {
+      temp.open('modWrap', function(err, info) {
+        fs.close(info.fd, function(err) {
+          path = info.path;
+          sink = new formation.FileSink(path, moduleWrapper);
+          sink.init(done);
+        });
+      });
+    });
+
+    it('writes the expected content', function (done) {
+      fs.readFile(path, function (err, data) {
+        data.toString().should.equal(moduleWrapper.cached);
+        done();
+      });
+    });
+
+    it('updates dynamagically', function (done) {
+      fs.readFile(path, function (err, data) {
+        data.toString().should.equal(moduleWrapper.cached);
+        moduleWrapper.emit('dirty');
+        moduleWrapper.cached = 'poop';
+        moduleWrapper.emit('update');
+        setTimeout(function () {
+          fs.readFile(path, function (err, data) {
+            data.toString().should.equal('poop');
+            done();
+          });
+        }, 0);
+      });
+    });
+  });
 });
 
